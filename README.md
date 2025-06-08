@@ -226,3 +226,83 @@ Para dúvidas ou problemas:
 1. Verifique este README
 2. Confira os logs de erro
 3. Abra uma issue no repositório
+
+## 📊 Pesquisa e Documentação
+
+### Tamanho do Dataset
+
+- **Número de amostras**: Aproximadamente 202.599 imagens do dataset CelebA
+- **Dimensões das imagens**:
+  - Original: 178×218 pixels (imagens coloridas RGB)
+  - Processadas: 224×224 pixels (redimensionadas para entrada da rede)
+- **Tamanho total**: ~1.3GB de imagens comprimidas
+- **Características**: Faces de celebridades alinhadas e recortadas
+- **Embeddings gerados**: Vetores de 512 dimensões por imagem
+
+### Tipo de Tarefa
+
+**Tarefa Principal**: **Comparação de Similaridade Facial** (Face Similarity Matching)
+
+- **Subtipo**: Aprendizado de representação (Representation Learning)
+- **Abordagem**:
+  - Extração de características usando CNN pré-treinada (ResNet18)
+  - Busca por vizinhos mais próximos (K-Nearest Neighbors)
+
+**Pipeline**:
+
+1. **Extração de Features**: ResNet18 → Embeddings de 512D
+2. **Indexação**: KNN com métrica cosseno
+3. **Comparação**: Busca do embedding mais similar
+4. **Resultado**: Celebridade + score de similaridade
+
+### Principais Desafios
+
+#### 1. **Desbalanceamento do Dataset**
+
+- Algumas celebridades têm muito mais fotos que outras
+- Pode causar viés para celebridades mais representadas
+- **Solução implementada**: Uso de embeddings individuais por imagem
+
+#### 2. **Variabilidade Facial**
+
+- Diferentes poses, iluminação e expressões
+- Ângulos de câmera variados
+- Qualidade de imagem inconsistente
+- **Solução**: Normalização e pré-processamento robusto
+
+#### 3. **Limitações Computacionais**
+
+- Dataset completo: 200k+ imagens
+- Processamento de embeddings demanda alta memória RAM
+- **Solução atual**: Processamento em lotes de 300k imagens máximo
+
+#### 4. **Qualidade das Labels**
+
+- Labels extraídas do nome do arquivo (`nome_001.jpg`)
+- Pode haver inconsistências na nomenclatura
+- **Impacto**: Afeta a identificação correta da celebridade
+
+#### 5. **Generalização para Imagens Externas**
+
+- Modelo treinado apenas em celebridades
+- Pode ter dificuldade com pessoas comuns
+- Diferenças de qualidade entre dataset e fotos do usuário
+
+#### 6. **Armazenamento e Performance**
+
+- Arquivos de embeddings podem ser grandes (>1GB)
+- Tempo de primeira execução elevado
+- **Solução**: Cache de embeddings em arquivos .pkl
+
+### Métricas de Avaliação
+
+- **Similaridade Cosseno**: 0 a 1 (1 = idêntico)
+- **Distância KNN**: Baseada em espaço de características de 512D
+- **Tempo de resposta**: ~2-5 segundos por comparação
+
+### Limitações Conhecidas
+
+1. **Dependência de qualidade da imagem de entrada**
+2. **Viés para celebridades mais representadas no dataset**
+3. **Sensibilidade a variações de pose e iluminação**
+4. **Limitação a faces frontais e semi-frontais**
